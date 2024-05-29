@@ -8,7 +8,7 @@
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-  - [Riverpod](#Riverpod)
+- [State Management with Riverpod](#state-management-with-riverpod)
 - [Usage](#usage)
 - [Contact](#contact)
 
@@ -48,7 +48,7 @@ Make sure you have the following installed:
     flutter run
     ```
 
-## State Management with Riverpod
+## State Management with [Riverpod](https://riverpod.dev/)
 
 This project uses [Riverpod](https://riverpod.dev/) for state management. Below is an example of how state management is implemented in this project for handling filters.
 
@@ -61,29 +61,6 @@ enum Filter {
   travel,
   leisure,
   work,
-}
-
-class FilterNotifier extends StateNotifier<Map<Filter, bool>> {
-  FilterNotifier()
-      : super(
-          {
-            Filter.food: true,
-            Filter.travel: true,
-            Filter.leisure: true,
-            Filter.work: true,
-          },
-        );
-
-  void setFilter(Filter filter, bool value) {
-    state = {
-      ...state,
-      filter: value,
-    };
-  }
-
-  void setFilters(Map<Filter, bool> filters) {
-    state = filters;
-  }
 }
 
 import 'package:flutter/material.dart';
@@ -117,6 +94,65 @@ final filtersProvider =
   (ref) => FilterNotifier(),
 );
 
+```
+
+2. Create a `FilterNotifier` class that extends `StateNotifier<Map<Filter, bool>>`. This class will handle the state management for the filters:
+
+```dart
+class FilterNotifier extends StateNotifier<Map<Filter, bool>> {
+  FilterNotifier()
+      : super(
+          {
+            Filter.food: true,
+            Filter.travel: true,
+            Filter.leisure: true,
+            Filter.work: true,
+          },
+        );
+
+  void setFilter(Filter filter, bool value) {
+    state = {
+      ...state,
+      filter: value,
+    };
+  }
+
+  void setFilters(Map<Filter, bool> filters) {
+    state = filters;
+  }
+}
+```
+* Constructor: Initializes the state with all filters set to true.
+* setFilter: Updates the state for a specific filter.
+* setFilters: Replaces the current state with a new set of filters.
+
+> Usage Example
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class FilterScreen extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, ScopedReader watch) {
+    final filters = watch(filtersProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Filters')),
+      body: ListView(
+        children: filters.entries.map((entry) {
+          return SwitchListTile(
+            title: Text(entry.key.toString().split('.').last),
+            value: entry.value,
+            onChanged: (bool value) {
+              context.read(filtersProvider.notifier).setFilter(entry.key, value);
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
 ```
 
 
