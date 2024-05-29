@@ -64,7 +64,7 @@ Make sure you have the following installed:
 
 ## App Structure
 
-The code all begining in main.dart, where all the setup like theme and provider are there
+The code all beginning in `main.dart`, where all the setup like theme and provider are there
 
 ```dart
 import 'package:expense_tracker/screens/tabs.dart';
