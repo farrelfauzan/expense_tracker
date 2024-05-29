@@ -9,6 +9,7 @@
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
 - [Screenshoot](#screenshoot)
+- [App Structure](#app-structure)
 - [State Management with Riverpod](#state-management-with-riverpod)
 - [Usage](#usage)
 - [Contact](#contact)
@@ -49,7 +50,177 @@ Make sure you have the following installed:
     flutter run
     ```
 ## Screenshoot
-![Screenshot 2024-05-30 052825](https://github.com/farrelfauzan/expense_tracker/assets/97167243/59eb1a47-ea07-438c-b0cf-f103e7b19f9f)
+![Screenshot 2024-05-30 052825](https://github.com/farrelfauzan/expense_tracker/assets/97167243/9626314c-9849-4fe5-9eb0-b3a28e06b764)
+
+* Click Add Button to add your expense
+
+![Screenshot 2024-05-30 053154](https://github.com/farrelfauzan/expense_tracker/assets/97167243/07724254-f638-4f30-a961-c9ce719cf2b9)
+
+* Add Expenses Page
+
+![image](https://github.com/farrelfauzan/expense_tracker/assets/97167243/450f5ff3-0c10-4882-94b4-647c213a06cd)
+
+* Filter Page, you can filter by expenses category
+
+## App Structure
+
+The code all begining in main.dart, where all the setup like theme and provider are there
+
+```dart
+import 'package:expense_tracker/screens/tabs.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+var kColorScheme = ColorScheme.fromSeed(
+  seedColor: const Color.fromARGB(255, 96, 59, 181),
+);
+
+var kDarkColorScheme = ColorScheme.fromSeed(
+  brightness: Brightness.dark,
+  seedColor: const Color.fromARGB(255, 5, 99, 125),
+);
+
+void main() {
+  runApp(
+    const ProviderScope(
+      child: App(),
+    ),
+  );
+}
+
+class App extends StatelessWidget {
+  const App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      darkTheme: ThemeData.dark().copyWith(
+        useMaterial3: true,
+        colorScheme: kDarkColorScheme,
+        cardTheme: const CardTheme().copyWith(
+          color: kDarkColorScheme.secondaryContainer,
+          margin: const EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 16,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: kDarkColorScheme.primaryContainer,
+            foregroundColor: kDarkColorScheme.onPrimaryContainer,
+          ),
+        ),
+      ),
+      theme: ThemeData().copyWith(
+        useMaterial3: true,
+        colorScheme: kColorScheme,
+        appBarTheme: const AppBarTheme().copyWith(
+          backgroundColor: kColorScheme.onPrimaryContainer,
+          foregroundColor: kColorScheme.primaryContainer,
+        ),
+        cardTheme: const CardTheme().copyWith(
+          color: kColorScheme.secondaryContainer,
+          margin: const EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 16,
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: kColorScheme.primaryContainer,
+          ),
+        ),
+        textTheme: ThemeData().textTheme.copyWith(
+              titleLarge: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.normal,
+                color: kColorScheme.onSecondaryContainer,
+              ),
+            ),
+      ),
+      // themeMode: ThemeMode.system,
+      home: const TabScreen(),
+    );
+  }
+}
+```
+
+If you see ini main function it run the app with App class that inside the provider, provider use for the global state management. So, we can access the same state in different screen.
+
+I use TabScreen as home, that can help to navigate between screen using bottom navigation.
+
+```dart
+// tabs.dart
+
+//...
+return Scaffold(
+      appBar: AppBar(
+        title: Text(activePageTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              _openAddExpenseOverlay();
+            },
+          ),
+        ],
+      ),
+      body: activePage,
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: _selectPage,
+        currentIndex: _selectedPageIndex,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Filter',
+          ),
+        ],
+      ),
+    );
+//...
+```
+
+So if you can see I return the BottomNavigationBar in Scaffold widget to navigate between home screen and filter screen.
+
+Here's the logic to move between screen.
+
+```dart
+
+class _TabScreenState extends ConsumerState<TabScreen> {
+  int _selectedPageIndex = 0;
+  bool _isLoading = true;
+  String? _error;
+  //...
+  void _selectPage(int index) {
+    setState(() {
+      _selectedPageIndex = index;
+    });
+  }
+
+  //...
+
+  @override
+  Widget build(BuildContext context) {
+    //...
+
+     if (_selectedPageIndex == 1) {
+      activePage = const FiltersScreen();
+      activePageTitle = 'Filters';
+    }
+
+    //...
+  }
+
+}
+
+```
+
+In this code the OnTap properties in BottomNavigationBar widget trigger this function that makes you move to other screen each time you click the navigation.
+
 ## State Management with [Riverpod](https://riverpod.dev/)
 
 This project uses [Riverpod](https://riverpod.dev/) for state management. Below is an example of how state management is implemented in this project for handling filters.
