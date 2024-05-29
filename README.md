@@ -8,6 +8,7 @@
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+- [Screenshoot](#screenshoot)
 - [State Management with Riverpod](#state-management-with-riverpod)
 - [Usage](#usage)
 - [Contact](#contact)
@@ -47,7 +48,8 @@ Make sure you have the following installed:
     ```bash
     flutter run
     ```
-
+## Screenshoot
+![Screenshot 2024-05-30 052825](https://github.com/farrelfauzan/expense_tracker/assets/97167243/59eb1a47-ea07-438c-b0cf-f103e7b19f9f)
 ## State Management with [Riverpod](https://riverpod.dev/)
 
 This project uses [Riverpod](https://riverpod.dev/) for state management. Below is an example of how state management is implemented in this project for handling filters.
