@@ -8,6 +8,7 @@
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+  - [Riverpod](#Riverpod)
 - [Usage](#usage)
 - [Contact](#contact)
 
@@ -46,6 +47,78 @@ Make sure you have the following installed:
     ```bash
     flutter run
     ```
+
+## State Management with Riverpod
+
+This project uses [Riverpod](https://riverpod.dev/) for state management. Below is an example of how state management is implemented in this project for handling filters.
+
+### Filter Enumeration
+
+We define an enumeration `Filter` to categorize different types of filters:
+```dart
+enum Filter {
+  food,
+  travel,
+  leisure,
+  work,
+}
+
+class FilterNotifier extends StateNotifier<Map<Filter, bool>> {
+  FilterNotifier()
+      : super(
+          {
+            Filter.food: true,
+            Filter.travel: true,
+            Filter.leisure: true,
+            Filter.work: true,
+          },
+        );
+
+  void setFilter(Filter filter, bool value) {
+    state = {
+      ...state,
+      filter: value,
+    };
+  }
+
+  void setFilters(Map<Filter, bool> filters) {
+    state = filters;
+  }
+}
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class FilterScreen extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, ScopedReader watch) {
+    final filters = watch(filtersProvider);
+
+    return Scaffold(
+      appBar: AppBar(title: Text('Filters')),
+      body: ListView(
+        children: filters.entries.map((entry) {
+          return SwitchListTile(
+            title: Text(entry.key.toString().split('.').last),
+            value: entry.value,
+            onChanged: (bool value) {
+              context.read(filtersProvider.notifier).setFilter(entry.key, value);
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+
+final filtersProvider =
+    StateNotifierProvider<FilterNotifier, Map<Filter, bool>>(
+  (ref) => FilterNotifier(),
+);
+
+```
+
 
 ## Contact
 Muhammad Farrel Fauzan - [farrelfauzan78@gmail.com](mailto:farrelfauzan78@gmail.com)
